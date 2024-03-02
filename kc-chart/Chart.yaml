@@ -1,0 +1,9 @@
+apiVersion: v2
+name: kc-chart
+description: Práctica de K8S y HELM en modulo de Keepcoding Academy
+
+type: application
+
+version: 1.0.0
+
+appVersion: "1.0.0"

@@ -1,0 +1,123 @@
+# NAMESPACE
+namespace: "keepcoding"
+
+####################
+##### REPLICAS #####
+####################
+replicaCount:
+  mysql: 1
+  wordpress: 3
+
+
+###############
+##### PVC #####
+###############
+pvc:
+  mysql:
+    accessModes: "ReadWriteOnce"
+    storageSize: "1Gi"
+  wordpress:
+    accessModes: "ReadWriteOnce"
+    storageSize: "1Gi"
+
+
+###############################################
+##### Definición de valores del ConfigMap #####
+###############################################
+configmap:
+
+  #########
+  # MYSQL #
+  #########
+  DB_HOST: "mysql-service" # Host servicio de Mysql
+  DB_PORT: 3306 # Puerto de Mysql
+  DB_NAME: "keepcoding" # Nombre de la base de datos
+  DB_USER: "kc_user" # usuario no root de la base de datos
+  DB_PREFIX: "kc_" # Prefijo para las tablas de WordPress
+
+  #############
+  # WORDPRESS #
+  #############
+  WP_HOST: yotkt.com
+  WP_PORT: "80"
+  WP_PATH: "/var/www/html" # Path de instalacion de WordPress
+  WP_TITLE: "Keepcoding Academy" # Titulo para el blog
+  WP_ADMIN_USER: "keepcoding" # Usuario para acceder a WordPress
+  WP_ADMIN_MAIL: "devops@keepcoding.com" # Email del usuario de WordPress
+  BUILD_ENV: "production" # Para definir el entorno (SOLO UTIL PARA COMPILAR LA IMAGEN)
+
+
+#############################################
+##### Definición de valores de secretos #####
+#############################################
+secrets:
+  
+  #########
+  # MYSQL #
+  #########
+  mysqlRootPassword: "kc$47625875" # Contraseña usuario root de la base de datos
+  dbPass: "654321" # Contraseña usuario no root de la base de datos
+
+  #############
+  # WORDPRESS #
+  #############
+  wpAdminPass: "keepcoding" # Contraseña del administrador de WordPress
+
+
+#####################
+##### RESOURCES #####
+#####################
+resources:
+  mysql:
+    limits:
+      cpu: "250m"
+      memory: "450Mi"
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+  wordpress:
+    limits:
+      cpu: "250m"
+      memory: "450Mi"
+    requests:
+      cpu: "50m"
+      memory: "256Mi"
+
+
+####################
+##### SERVICES #####
+####################
+service:
+  loadBalancerEnabled: false
+  mysql:
+    type: ClusterIP
+  wordpress:
+    type: ClusterIP
+
+
+#######################
+##### AUTOSCALING #####
+#######################
+autoscaling:
+  # enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  # targetMemoryUtilizationPercentage: 70
+
+
+###################
+##### INGRESS #####
+###################
+ingress:
+  enabled: true
+
+
+##################
+##### IMAGES #####
+##################
+image:
+  wordpress:
+    repository: jhoncytech/bookworm-apache-wordpress
+    pullPolicy: IfNotPresent
+    tag: latest

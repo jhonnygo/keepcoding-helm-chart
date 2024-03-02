@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  DB_HOST: "{{ .Values.configmap.DB_HOST }}"
+  DB_PORT: "{{ .Values.configmap.DB_PORT }}"
+  DB_NAME: "{{ .Values.configmap.DB_NAME }}"
+  DB_USER: "{{ .Values.configmap.DB_USER }}"
+  DB_PREFIX: "{{ .Values.configmap.DB_PREFIX }}"
+  WP_HOST: "{{ .Values.configmap.WP_HOST }}"
+  WP_PATH: "{{ .Values.configmap.WP_PATH }}"
+  WP_TITLE: "{{ .Values.configmap.WP_TITLE }}"
+  WP_ADMIN_USER: "{{ .Values.configmap.WP_ADMIN_USER }}"
+  WP_ADMIN_MAIL: "{{ .Values.configmap.WP_ADMIN_MAIL }}"
+  BUILD_ENV: "{{ .Values.configmap.BUILD_ENV }}"

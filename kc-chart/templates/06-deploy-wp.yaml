@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-wordpress-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount.wordpress }}
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      affinity:
+        # NO PUEDEN ESTAR EN EL MISMO NODO PODS DE WORDPRESS
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - wordpress
+            topologyKey: "kubernetes.io/hostname"
+        # podAffinity:
+        #   TIENE QUE EXISTIR EN EL MISMO NODO POR LO MENOS UN POD DE MYSQL
+        #   requiredDuringSchedulingIgnoredDuringExecution:
+        #   - labelSelector:
+        #       matchExpressions:
+        #       - key: app
+        #         operator: In
+        #         values:
+        #         - mysql
+        #     topologyKey: "kubernetes.io/hostname"
+      initContainers:
+        - name: init-mysql
+          image: busybox
+          command: ['sh', '-c', 'until nc -z mysql-service 3306; do echo "Waiting for MySQL"; sleep 1; done;']
+      containers:
+      - name: wordpress-container
+        image: {{ .Values.image.wordpress.repository }}:{{ .Values.image.wordpress.tag }}
+        ports:
+        - containerPort: 80
+          name: wordpress
+        envFrom:
+        - configMapRef:
+            name: {{ .Chart.Name }}-configmap
+        - secretRef:
+            name: {{ .Chart.Name }}-secrets
+        resources:
+          limits:
+            cpu: {{ .Values.resources.wordpress.limits.cpu | quote }}
+            memory: {{ .Values.resources.wordpress.limits.memory | quote }}
+          requests:
+            cpu: {{ .Values.resources.wordpress.requests.cpu | quote }}
+            memory: {{ .Values.resources.wordpress.requests.memory | quote }}
+      volumes:
+      - name: {{ .Chart.Name }}-wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name }}-wordpress-pv-claim

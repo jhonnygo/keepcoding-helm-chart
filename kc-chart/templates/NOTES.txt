@@ -1,0 +1,18 @@
+1. Datos de la instalación:
+
+{{- $host := .Values.configmap.WP_HOST }}
+
+==============================================
+CHART NOMBRE: {{ .Chart.Name }}
+NAMESPACE UTILIZADO: {{ .Release.Namespace }}
+RELEASE: {{ .Release.Namespace }}
+==============================================
+
+
+2. Accesos para el site de wordpress:
+
+NOTA: Debes esperar unos minutos hasta que el
+site este totalmente aprovisionado.
+==============================================
+URL: http://{{ $host }}
+==============================================
