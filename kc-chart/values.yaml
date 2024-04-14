@@ -118,6 +118,6 @@ ingress:
 ##################
 image:
   wordpress:
-    repository: jhoncytech/bookworm-apache-wordpress
+    repository: jhoncytech/keepcoding-cicd
     pullPolicy: IfNotPresent
     tag: latest
